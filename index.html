@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Color Page</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Anton SC Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton+SC&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom style to apply the Anton SC font. Color will be set by JavaScript. */
+        .graphic-text {
+            line-height: 1; /* Keep tight spacing for large text */
+            font-family: 'Anton SC', sans-serif;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<!-- Removed hardcoded background color. JavaScript will set the colors. -->
+<body class="min-h-screen flex items-center justify-center">
+
+    <!-- Main Centering Container -->
+    <div class="p-4 sm:p-8 text-center">
+        <!-- Added ID for JavaScript manipulation -->
+        <h1 id="mainText" class="graphic-text text-6xl sm:text-8xl lg:text-9xl uppercase tracking-normal">
+            EVERYONE WELCOME
+        </h1>
+        
+        <!-- New Text Link Section -->
+        <a id="formLink" href="#" 
+           class="block mt-6 text-xl sm:text-2xl font-normal transition hover:opacity-100 hover:underline">
+            Get a poster
+        </a>
+        
+    </div>
+
+    <script>
+        /**
+         * Generates a random hexadecimal color code and its corresponding RGB components.
+         */
+        function generateRandomColorAndRGB() {
+            // Generate a random integer between 0 and 16777215 (FFFFFF)
+            const randomInt = Math.floor(Math.random() * 16777215);
+            // Convert the integer to a 6-digit hex string
+            const hexColor = '#' + randomInt.toString(16).padStart(6, '0');
+
+            // Extract the R, G, B components from the integer
+            const r = (randomInt >> 16) & 255;
+            const g = (randomInt >> 8) & 255;
+            const b = randomInt & 255;
+
+            return { hex: hexColor, r, g, b };
+        }
+
+        /**
+         * Determines the best high-contrast text color (black or white) 
+         * based on the background color's perceived luminance.
+         * @param {number} r - Red component (0-255)
+         * @param {number} g - Green component (0-255)
+         * @param {number} b - Blue component (0-255)
+         * @returns {string} '#000000' (black) or '#FFFFFF' (white)
+         */
+        function getHighContrastTextColor(r, g, b) {
+            // Calculate perceived luminance (standard formula for human vision)
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+            
+            // If luminance is above 140 (a threshold slightly higher than the midpoint 128), 
+            // the background is considered light, so we use black text. Otherwise, use white text.
+            return luminance > 140 ? '#000000' : '#FFFFFF';
+        }
+
+        /**
+         * Main function to set random, contrasting colors on the page.
+         */
+        function setRandomColors() {
+            // Get a random background color and its RGB components
+            const { hex: bgColor, r, g, b } = generateRandomColorAndRGB();
+            // Determine the ideal contrasting text color
+            const textColor = getHighContrastTextColor(r, g, b);
+
+            const body = document.body;
+            const mainText = document.getElementById('mainText');
+            const formLink = document.getElementById('formLink'); // Get the new link element
+
+            // Apply the generated colors to the elements
+            body.style.backgroundColor = bgColor;
+            mainText.style.color = textColor;
+            if (formLink) {
+                formLink.style.color = textColor; // Apply color to the link too
+            }
+        }
+
+        // Run the color setting function when the page has fully loaded
+        document.addEventListener('DOMContentLoaded', setRandomColors);
+    </script>
+</body>
+</html>
